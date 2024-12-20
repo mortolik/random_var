@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QScrollArea *tableScrollArea = new QScrollArea(this);
     tableScrollArea->setWidget(resultTable);
     tableScrollArea->setWidgetResizable(true);
-    tableScrollArea->setFixedHeight(150); // Фиксированная высота таблицы
+    tableScrollArea->setFixedHeight(150);
     resultLayout->addWidget(tableScrollArea, 0, Qt::AlignTop);
 
     mainLayout->addLayout(resultLayout);
