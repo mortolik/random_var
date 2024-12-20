@@ -1,5 +1,4 @@
 #include "RandomVariableGenerator.hpp"
-#include <random>
 
 double RandomVariableGenerator::generateUniform()
 {

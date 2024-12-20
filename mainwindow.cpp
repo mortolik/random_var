@@ -1,12 +1,17 @@
 #include "MainWindow.hpp"
 #include "qtextedit.h"
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+
+using namespace QtCharts;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     auto *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
-    auto *mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout = new QVBoxLayout(centralWidget);
 
     // Layout для ввода параметров
     auto *inputLayout = new QHBoxLayout();
@@ -40,13 +45,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     mainLayout->addLayout(resultLayout);
 
+    // Добавление виджета для характеристик и графиков
+    // statisticsAndPlot = new StatisticsAndPlot(this);
+    // mainLayout->addWidget(statisticsAndPlot);
+
     // Инициализация генератора
     generator = new RandomVariableGenerator();
 }
 
-
 void MainWindow::generateSequence()
 {
+    if (statisticsAndPlot != nullptr)
+    {
+        mainLayout->removeWidget(statisticsAndPlot);
+        delete statisticsAndPlot;
+    }
+    statisticsAndPlot = new StatisticsAndPlot(this);
     double p = probabilityInput->text().toDouble();
     int targetValue = targetValueInput->text().toInt();
 
@@ -56,16 +70,20 @@ void MainWindow::generateSequence()
         return;
     }
 
-    auto sequence = generator->generateSequence(p, targetValue);
+    currentSequence = generator->generateSequence(p, targetValue);
 
     // Отображаем последовательность в QTextEdit
     QString sequenceText;
-    for (int value : sequence)
+    for (int value : currentSequence)
     {
         sequenceText += QString::number(value) + " ";
     }
     sequenceDisplay->setText(sequenceText.trimmed()); // Выводим последовательность
 
     // Отображаем частоты в таблице
-    resultTable->displayResults(sequence);
+    resultTable->displayResults(currentSequence);
+
+    // Обновляем виджет характеристик и графиков
+    statisticsAndPlot->update(currentSequence);
+    mainLayout->addWidget(statisticsAndPlot);
 }

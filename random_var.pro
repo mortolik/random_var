@@ -1,4 +1,6 @@
 QT       += core gui
+QT       += charts
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,12 +13,14 @@ CONFIG += c++17
 SOURCES += \
     RandomVariableGenerator.cpp \
     ResultTable.cpp \
+    StatisticsAndPlot.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     RandomVariableGenerator.hpp \
     ResultTable.hpp \
+    StatisticsAndPlot.hpp \
     mainwindow.hpp
 
 FORMS += \

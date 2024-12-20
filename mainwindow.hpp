@@ -2,6 +2,7 @@
 
 #include "RandomVariableGenerator.hpp"
 #include "ResultTable.hpp"
+#include "StatisticsAndPlot.hpp"
 #include <QApplication>
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -29,9 +30,19 @@ private slots:
     void generateSequence();
 
 private:
-    QLineEdit *probabilityInput;
-    QLineEdit *targetValueInput;
-    QTextEdit *sequenceDisplay;
-    ResultTable *resultTable;
-    RandomVariableGenerator *generator;
+    QLineEdit *probabilityInput {nullptr};
+    QLineEdit *targetValueInput {nullptr};
+    QTextEdit *sequenceDisplay {nullptr};
+    ResultTable *resultTable {nullptr};
+    RandomVariableGenerator *generator {nullptr};
+    StatisticsAndPlot *statisticsAndPlot {nullptr};
+
+    QVBoxLayout *mainLayout {nullptr};
+
+    std::vector<int> currentSequence;
+
+    void calculateStatisticsWrapper();
+    void calculateStatistics(const std::vector<int> &sequence);
+    void plotDistributionWrapper();
+    void plotDistribution(const std::vector<int> &sequence);
 };
