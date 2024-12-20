@@ -7,7 +7,6 @@ double RandomVariableGenerator::generateUniform()
     return static_cast<double>(seed) / (1U << 31);
 }
 
-// Функция для генерации последовательности
 std::vector<int> RandomVariableGenerator::generateSequence(double p, int targetValue)
 {
     std::vector<int> sequence;
@@ -16,19 +15,18 @@ std::vector<int> RandomVariableGenerator::generateSequence(double p, int targetV
     while (true)
     {
         count++;
-        double u = generateUniform(); // Генерация случайного числа из (0, 1)
+        double u = generateUniform();
 
-        // Если число меньше p, считаем, что "успех"
         if (u < p)
         {
-            sequence.push_back(targetValue); // Добавляем целевое значение
-            break; // Завершаем цикл
+            sequence.push_back(targetValue);
+            break;
         }
         else
         {
-            sequence.push_back(count); // Добавляем текущее значение
+            sequence.push_back(count);
         }
     }
 
-    return sequence; // Возвращаем сгенерированную последовательность
+    return sequence;
 }

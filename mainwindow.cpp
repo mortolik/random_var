@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
 #include "qtextedit.h"
+#include <QScrollArea>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
@@ -13,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     mainLayout = new QVBoxLayout(centralWidget);
 
-    // Layout для ввода параметров
     auto *inputLayout = new QHBoxLayout();
     inputLayout->addWidget(new QLabel("Введите вероятность (p):"));
     probabilityInput = new QLineEdit();
@@ -23,34 +23,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     targetValueInput = new QLineEdit();
     inputLayout->addWidget(targetValueInput);
 
-    mainLayout->addLayout(inputLayout);
-
-    // Кнопка для генерации последовательности
     auto *generateButton = new QPushButton("Генерировать последовательность");
     connect(generateButton, &QPushButton::clicked, this, &MainWindow::generateSequence);
-    mainLayout->addWidget(generateButton);
+    inputLayout->addWidget(generateButton);
 
-    // Layout для отображения результатов
+    mainLayout->addLayout(inputLayout);
+
     auto *resultLayout = new QHBoxLayout();
 
-    // Текстовое поле для отображения последовательности
     sequenceDisplay = new QTextEdit();
-    sequenceDisplay->setReadOnly(true); // Только для чтения
+    sequenceDisplay->setReadOnly(true);
     sequenceDisplay->setPlaceholderText("Здесь будет отображена последовательность...");
-    resultLayout->addWidget(sequenceDisplay);
+    sequenceDisplay->setFixedHeight(150);
+    resultLayout->addWidget(sequenceDisplay, 0, Qt::AlignTop);
 
-    // Таблица для отображения частот
     resultTable = new ResultTable(this);
-    resultLayout->addWidget(resultTable);
+
+    QScrollArea *tableScrollArea = new QScrollArea(this);
+    tableScrollArea->setWidget(resultTable);
+    tableScrollArea->setWidgetResizable(true);
+    tableScrollArea->setFixedHeight(150); // Фиксированная высота таблицы
+    resultLayout->addWidget(tableScrollArea, 0, Qt::AlignTop);
 
     mainLayout->addLayout(resultLayout);
 
-    // Добавление виджета для характеристик и графиков
-    // statisticsAndPlot = new StatisticsAndPlot(this);
-    // mainLayout->addWidget(statisticsAndPlot);
-
-    // Инициализация генератора
     generator = new RandomVariableGenerator();
+    statisticsAndPlot = nullptr;
 }
 
 void MainWindow::generateSequence()
@@ -59,8 +57,10 @@ void MainWindow::generateSequence()
     {
         mainLayout->removeWidget(statisticsAndPlot);
         delete statisticsAndPlot;
+        statisticsAndPlot = nullptr;
     }
     statisticsAndPlot = new StatisticsAndPlot(this);
+
     double p = probabilityInput->text().toDouble();
     int targetValue = targetValueInput->text().toInt();
 
@@ -72,18 +72,16 @@ void MainWindow::generateSequence()
 
     currentSequence = generator->generateSequence(p, targetValue);
 
-    // Отображаем последовательность в QTextEdit
     QString sequenceText;
     for (int value : currentSequence)
     {
         sequenceText += QString::number(value) + " ";
     }
-    sequenceDisplay->setText(sequenceText.trimmed()); // Выводим последовательность
+    sequenceDisplay->setText(sequenceText.trimmed());
 
-    // Отображаем частоты в таблице
     resultTable->displayResults(currentSequence);
 
-    // Обновляем виджет характеристик и графиков
     statisticsAndPlot->update(currentSequence);
     mainLayout->addWidget(statisticsAndPlot);
+
 }
