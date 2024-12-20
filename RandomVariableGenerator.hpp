@@ -21,8 +21,8 @@ class RandomVariableGenerator : public QObject
 
 public:
     RandomVariableGenerator(QObject *parent = nullptr) : QObject(parent) {}
+    std::vector<int> generateSequence(double p, int targetValue);
 
-    std::vector<int> generateDiscrete(double p, int targetValue);
-
-    std::vector<double> generateContinuous(double p, int targetValue);
+private:
+    double generateUniform();
 };

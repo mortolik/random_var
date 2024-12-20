@@ -1,43 +1,35 @@
-#include <QRandomGenerator>
 #include "RandomVariableGenerator.hpp"
+#include <random>
 
-#include "qvector.h"
-
-
-
-
-std::vector<int> RandomVariableGenerator::generateDiscrete(double p, int targetValue)
+double RandomVariableGenerator::generateUniform()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::bernoulli_distribution dist(p);
-
-    std::vector<int> sequence;
-    int value;
-    do
-    {
-        value = dist(gen) ? targetValue : std::uniform_int_distribution<>(1, targetValue - 1)(gen);
-        sequence.push_back(value);
-    } while (value != targetValue);
-
-    std::sort(sequence.begin(), sequence.end());
-    return sequence;
+    static unsigned int seed = 123456789; // Фиксированный seed для воспроизводимости
+    seed = (1103515245 * seed + 12345) % (1U << 31); // Линейный конгруэнтный метод
+    return static_cast<double>(seed) / (1U << 31);
 }
 
-std::vector<double> RandomVariableGenerator::generateContinuous(double p, int targetValue)
+// Функция для генерации последовательности
+std::vector<int> RandomVariableGenerator::generateSequence(double p, int targetValue)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(0.0, 1.0);
+    std::vector<int> sequence;
+    int count = 0;
 
-    std::vector<double> sequence;
-    double value;
-    do
+    while (true)
     {
-        value = dist(gen) * targetValue;
-        sequence.push_back(value);
-    } while (value < targetValue - 0.1);
+        count++;
+        double u = generateUniform(); // Генерация случайного числа из (0, 1)
 
-    std::sort(sequence.begin(), sequence.end());
-    return sequence;
+        // Если число меньше p, считаем, что "успех"
+        if (u < p)
+        {
+            sequence.push_back(targetValue); // Добавляем целевое значение
+            break; // Завершаем цикл
+        }
+        else
+        {
+            sequence.push_back(count); // Добавляем текущее значение
+        }
+    }
+
+    return sequence; // Возвращаем сгенерированную последовательность
 }

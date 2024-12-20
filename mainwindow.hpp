@@ -16,22 +16,22 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <QTextEdit>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
 
 private slots:
-    void generateDiscrete();
-
-    void generateContinuous();
+    void generateSequence();
 
 private:
     QLineEdit *probabilityInput;
     QLineEdit *targetValueInput;
+    QTextEdit *sequenceDisplay;
     ResultTable *resultTable;
     RandomVariableGenerator *generator;
 };

@@ -1,6 +1,5 @@
-#include "mainwindow.hpp"
-#include "ui_mainwindow.h"
-
+#include "MainWindow.hpp"
+#include "qtextedit.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -9,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     auto *mainLayout = new QVBoxLayout(centralWidget);
 
-    // Input fields for parameters
+    // Layout для ввода параметров
     auto *inputLayout = new QHBoxLayout();
     inputLayout->addWidget(new QLabel("Введите вероятность (p):"));
     probabilityInput = new QLineEdit();
@@ -21,26 +20,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     mainLayout->addLayout(inputLayout);
 
-    // Buttons for generating random variables
-    auto *buttonLayout = new QHBoxLayout();
-    auto *generateDiscreteButton = new QPushButton("Генерировать (Дискретная С.В.)");
-    buttonLayout->addWidget(generateDiscreteButton);
-    connect(generateDiscreteButton, &QPushButton::clicked, this, &MainWindow::generateDiscrete);
+    // Кнопка для генерации последовательности
+    auto *generateButton = new QPushButton("Генерировать последовательность");
+    connect(generateButton, &QPushButton::clicked, this, &MainWindow::generateSequence);
+    mainLayout->addWidget(generateButton);
 
-    auto *generateContinuousButton = new QPushButton("Генерировать (Непрерывная С.В.)");
-    buttonLayout->addWidget(generateContinuousButton);
-    connect(generateContinuousButton, &QPushButton::clicked, this, &MainWindow::generateContinuous);
+    // Layout для отображения результатов
+    auto *resultLayout = new QHBoxLayout();
 
-    mainLayout->addLayout(buttonLayout);
+    // Текстовое поле для отображения последовательности
+    sequenceDisplay = new QTextEdit();
+    sequenceDisplay->setReadOnly(true); // Только для чтения
+    sequenceDisplay->setPlaceholderText("Здесь будет отображена последовательность...");
+    resultLayout->addWidget(sequenceDisplay);
 
-    // Table for displaying results
+    // Таблица для отображения частот
     resultTable = new ResultTable(this);
-    mainLayout->addWidget(resultTable);
+    resultLayout->addWidget(resultTable);
 
-    generator = new RandomVariableGenerator(this);
+    mainLayout->addLayout(resultLayout);
+
+    // Инициализация генератора
+    generator = new RandomVariableGenerator();
 }
 
-void MainWindow::generateDiscrete()
+
+void MainWindow::generateSequence()
 {
     double p = probabilityInput->text().toDouble();
     int targetValue = targetValueInput->text().toInt();
@@ -51,21 +56,16 @@ void MainWindow::generateDiscrete()
         return;
     }
 
-    auto sequence = generator->generateDiscrete(p, targetValue);
-    resultTable->displayResults(sequence);
-}
+    auto sequence = generator->generateSequence(p, targetValue);
 
-void MainWindow::generateContinuous()
-{
-    double p = probabilityInput->text().toDouble();
-    int targetValue = targetValueInput->text().toInt();
-
-    if (p <= 0.0 || p > 1.0 || targetValue <= 0)
+    // Отображаем последовательность в QTextEdit
+    QString sequenceText;
+    for (int value : sequence)
     {
-        QMessageBox::warning(this, "Ошибка", "Введите корректные значения параметров.");
-        return;
+        sequenceText += QString::number(value) + " ";
     }
+    sequenceDisplay->setText(sequenceText.trimmed()); // Выводим последовательность
 
-    auto sequence = generator->generateContinuous(p, targetValue);
+    // Отображаем частоты в таблице
     resultTable->displayResults(sequence);
 }
