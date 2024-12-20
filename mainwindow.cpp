@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include "qgroupbox.h"
 #include "qtextedit.h"
 #include <QScrollArea>
 #include <QtCharts/QChartView>
@@ -13,8 +14,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setCentralWidget(centralWidget);
 
     mainLayout = new QVBoxLayout(centralWidget);
+    mainLayout->setAlignment(Qt::AlignTop);
 
-    auto *inputLayout = new QHBoxLayout();
+    QHBoxLayout *groupBoxesLayout = new QHBoxLayout();
+    groupBoxesLayout->setSpacing(10);
+    groupBoxesLayout->setAlignment(Qt::AlignLeft);
+
+    QGroupBox* inputGroupBox = new QGroupBox("Основные параметры", this);
+    QVBoxLayout *groupBoxLayout1 = new QVBoxLayout(inputGroupBox);
+    groupBoxLayout1->setSpacing(10);
+
+    QHBoxLayout *inputLayout = new QHBoxLayout();
+    inputLayout->setSpacing(10);
+
     inputLayout->addWidget(new QLabel("Введите вероятность (p):"));
     probabilityInput = new QLineEdit();
     inputLayout->addWidget(probabilityInput);
@@ -27,7 +39,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(generateButton, &QPushButton::clicked, this, &MainWindow::generateSequence);
     inputLayout->addWidget(generateButton);
 
-    mainLayout->addLayout(inputLayout);
+
+    groupBoxLayout1->addLayout(inputLayout);
+    groupBoxesLayout->addWidget(inputGroupBox, 0, Qt::AlignLeft);
+
+    mainLayout->addLayout(groupBoxesLayout);
 
     auto *resultLayout = new QHBoxLayout();
 
