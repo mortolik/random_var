@@ -1,25 +1,41 @@
-#pragma once
-#include "qvalueaxis.h"
-#include <QWidget>
-#include <QtCharts/QChart>
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-QT_FORWARD_DECLARE_CLASS(QTextEdit);
+#ifndef STATISTICSANDPLOT_HPP
+#define STATISTICSANDPLOT_HPP
 
-using namespace QtCharts;
+#include <QWidget>
+#include <QTextEdit>
+#include <QtCharts/QChartView>
+#include <QtCharts/QValueAxis>
+#include <vector>
+#include <map>
 
 class StatisticsAndPlot : public QWidget
 {
 public:
-    StatisticsAndPlot(QWidget *parent);
-    void update(const std::vector<int> &sequence);
-private:
-    void calculateStatistics(const std::vector<int> &sequence);
-    void plotDistribution(const std::vector<int> &sequence);
-    QTextEdit* statisticsDisplay;
-    QChart* chart {nullptr};
-    QChartView* chartView {nullptr};
-    QtCharts::QValueAxis *axisX;
-    QtCharts::QValueAxis *axisY;
-};
+    explicit StatisticsAndPlot(QWidget *parent = nullptr);
+    void updateStatisticsAndPlot(const std::vector<int> &sequence, double p);
 
+private:
+    // Вычисление статистических характеристик
+    void calculateStatistics(const std::vector<int> &sequence);
+
+    // Построение ступенчатых графиков функций распределения
+    void plotCDF(const std::vector<int> &sequence, double p);
+
+    // Вычисление теоретической функции распределения Fη(x)
+    double Feta(double p, int x);
+
+    // Вычисление максимального отклонения D между функциями распределения
+    double computeMaxDeviation();
+
+    QTextEdit *statisticsDisplay;              // Отображение статистических характеристик
+    QtCharts::QChart *chart;                   // Объект графика
+    QtCharts::QChartView *chartView;          // Виджет для отображения графика
+    QtCharts::QValueAxis *axisX;               // Ось X
+    QtCharts::QValueAxis *axisY;               // Ось Y
+
+    // Хранение значений CDF для вычисления D
+    std::vector<std::pair<int, double>> empiricalCDF;
+    std::vector<std::pair<int, double>> theoreticalCDF;
+    double D; // Максимальное отклонение
+};
+#endif // STATISTICSANDPLOT_HPP

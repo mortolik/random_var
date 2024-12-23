@@ -24,25 +24,19 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
     void generateSequence();
 
 private:
-    QLineEdit *probabilityInput {nullptr};
-    QLineEdit *targetValueInput {nullptr};
-    QTextEdit *sequenceDisplay {nullptr};
-    ResultTable *resultTable {nullptr};
-    RandomVariableGenerator *generator {nullptr};
-    StatisticsAndPlot *statisticsAndPlot {nullptr};
-
-    QVBoxLayout *mainLayout {nullptr};
-
+    QVBoxLayout *mainLayout;
+    QLineEdit *probabilityInput; // Для p
+    QLineEdit *targetValueInput;
+    QTextEdit *sequenceDisplay;
+    ResultTable *resultTable;
+    RandomVariableGenerator *generator;
+    StatisticsAndPlot *statisticsAndPlot;
     std::vector<int> currentSequence;
-
-    void calculateStatisticsWrapper();
-    void calculateStatistics(const std::vector<int> &sequence);
-    void plotDistributionWrapper();
-    void plotDistribution(const std::vector<int> &sequence);
 };

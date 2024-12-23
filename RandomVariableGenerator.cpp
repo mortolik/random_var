@@ -6,28 +6,25 @@ double RandomVariableGenerator::generateUniform()
     return QRandomGenerator::global()->generateDouble();
 }
 
-
 std::vector<int> RandomVariableGenerator::generateSequence(double p, int numberOfExperiments)
 {
-    std::vector<int> stepsPerExperiment;
+    std::vector<int> results;
 
     for (int experiment = 0; experiment < numberOfExperiments; ++experiment)
     {
-        int count = 0;
-
+        int y = 0;
         while (true)
         {
-            count++;
-            double u = generateUniform();
-
-            if (u < p)
+            // Генерация случайного числа
+            if (generateUniform() < p)
             {
-                stepsPerExperiment.push_back(count);
-                break;
+                break; // Событие произошло, игра заканчивается
             }
+
+            y += 1;
         }
+        results.push_back(y);
     }
 
-    return stepsPerExperiment;
+    return results;
 }
-
