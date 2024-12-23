@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     probabilityInput = new QLineEdit();
     inputLayout->addWidget(probabilityInput);
 
-    inputLayout->addWidget(new QLabel("Введите значение окончания последовательности:"));
+    inputLayout->addWidget(new QLabel("Количество экспериментов:"));
     targetValueInput = new QLineEdit();
     inputLayout->addWidget(targetValueInput);
 

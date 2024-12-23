@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <algorithm>
 #include <numeric>
+#include <set>
 
 StatisticsAndPlot::StatisticsAndPlot(QWidget *parent) : QWidget(parent)
 {
@@ -89,45 +90,37 @@ void StatisticsAndPlot::plotDistribution(const std::vector<int> &sequence)
     auto *theoreticalSeries = new QtCharts::QLineSeries();
     auto *empiricalSeries = new QtCharts::QLineSeries();
 
+    std::map<int, int> freqMap;
+    for (int val : sequence)
+        freqMap[val]++;
+
+    std::set<int> uniqueValues(sequence.begin(), sequence.end());
+
+    double cumulative = 0.0;
+    double prevProbability = 0.0;
+    for (int val : uniqueValues)
+    {
+        cumulative += freqMap[val];
+        double probability = static_cast<double>(cumulative) / sequence.size();
+
+        theoreticalSeries->append(val, prevProbability);
+        theoreticalSeries->append(val, probability);
+        prevProbability = probability;
+    }
+    theoreticalSeries->setName("Теоретическая функция");
+
+    cumulative = 0;
+    for (const auto &[value, freq] : freqMap)
+    {
+        cumulative += freq;
+        empiricalSeries->append(value, static_cast<double>(cumulative) / sequence.size());
+    }
+    empiricalSeries->setName("Выборочная функция");
+
     int minVal = *std::min_element(sequence.begin(), sequence.end());
     int maxVal = *std::max_element(sequence.begin(), sequence.end());
-
-    if (minVal == maxVal)
-    {
-        theoreticalSeries->append(minVal, 0.0);
-        theoreticalSeries->append(minVal, 1.0);
-        theoreticalSeries->setName("Теоретическая функция");
-
-        empiricalSeries->append(minVal, 1.0);
-        empiricalSeries->setName("Выборочная функция");
-
-        axisX->setRange(minVal - 1, minVal + 1);
-        axisY->setRange(0, 1);
-    }
-    else
-    {
-        for (int i = minVal; i <= maxVal; ++i)
-        {
-            double x = static_cast<double>(i - minVal) / (maxVal - minVal);
-            theoreticalSeries->append(i, x);
-        }
-        theoreticalSeries->setName("Теоретическая функция");
-
-        std::map<int, int> freqMap;
-        for (int val : sequence)
-            freqMap[val]++;
-
-        int cumulative = 0;
-        for (const auto &[value, freq] : freqMap)
-        {
-            cumulative += freq;
-            empiricalSeries->append(value, static_cast<double>(cumulative) / sequence.size());
-        }
-        empiricalSeries->setName("Выборочная функция");
-
-        axisX->setRange(minVal, maxVal);
-        axisY->setRange(0, 1);
-    }
+    axisX->setRange(minVal, maxVal);
+    axisY->setRange(0, 1);
 
     chart->addSeries(theoreticalSeries);
     chart->addSeries(empiricalSeries);
@@ -137,5 +130,3 @@ void StatisticsAndPlot::plotDistribution(const std::vector<int> &sequence)
     empiricalSeries->attachAxis(axisX);
     empiricalSeries->attachAxis(axisY);
 }
-
-

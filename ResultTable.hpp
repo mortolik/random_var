@@ -19,5 +19,5 @@ class ResultTable : public QTableWidget
     Q_OBJECT
 public:
     ResultTable(QWidget *parent = nullptr);
-    void displayResults(const std::vector<int> &sequence);
+    void displayResults(const std::vector<int> &stepsPerExperiment);
 };

@@ -1,32 +1,33 @@
 #include "RandomVariableGenerator.hpp"
+#include <QRandomGenerator>
 
 double RandomVariableGenerator::generateUniform()
 {
-    static unsigned int seed = 123456789; // Фиксированный seed для воспроизводимости
-    seed = (1103515245 * seed + 12345) % (1U << 31); // Линейный конгруэнтный метод
-    return static_cast<double>(seed) / (1U << 31);
+    return QRandomGenerator::global()->generateDouble();
 }
 
-std::vector<int> RandomVariableGenerator::generateSequence(double p, int targetValue)
+
+std::vector<int> RandomVariableGenerator::generateSequence(double p, int numberOfExperiments)
 {
-    std::vector<int> sequence;
-    int count = 0;
+    std::vector<int> stepsPerExperiment;
 
-    while (true)
+    for (int experiment = 0; experiment < numberOfExperiments; ++experiment)
     {
-        count++;
-        double u = generateUniform();
+        int count = 0;
 
-        if (u < p)
+        while (true)
         {
-            sequence.push_back(targetValue);
-            break;
-        }
-        else
-        {
-            sequence.push_back(count);
+            count++;
+            double u = generateUniform();
+
+            if (u < p)
+            {
+                stepsPerExperiment.push_back(count);
+                break;
+            }
         }
     }
 
-    return sequence;
+    return stepsPerExperiment;
 }
+
