@@ -37,5 +37,8 @@ private:
     std::vector<std::pair<int, double>> empiricalCDF;
     std::vector<std::pair<int, double>> theoreticalCDF;
     double D; // Максимальное отклонение
+
+    int start_x;
+    int end_x;
 };
 #endif // STATISTICSANDPLOT_HPP

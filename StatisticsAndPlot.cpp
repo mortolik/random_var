@@ -108,7 +108,7 @@ void StatisticsAndPlot::calculateStatistics(const std::vector<int> &sequence)
     statisticsDisplay->setText(statsText);
 
     // Обновление диапазона осей
-    axisX->setRange(minVal - 1, maxVal + 1);
+    axisX->setRange(start_x, end_x);
     axisY->setRange(0, 1);
 }
 
@@ -145,8 +145,8 @@ void StatisticsAndPlot::plotCDF(const std::vector<int> &sequence, double p)
     theoreticalSeries->setName("Теоретическая F_eta(x)");
 
     // Определение диапазона x
-    int start_x = min_yj - 1;
-    int end_x = max_yj + 1;
+    start_x = std::max(0, min_yj);
+    end_x = max_yj + 1;
 
     // Векторы для хранения CDF
     std::vector<std::pair<int, double>> empiricalCdfVector;
@@ -167,7 +167,7 @@ void StatisticsAndPlot::plotCDF(const std::vector<int> &sequence, double p)
         empiricalCdfVector.emplace_back(x, F_b);
     }
 
-    // Построение теоретической CDF
+    // Построение теоретической
     for (int x = start_x; x <= end_x; ++x)
     {
         double F_eta = Feta(p, x);
@@ -176,7 +176,7 @@ void StatisticsAndPlot::plotCDF(const std::vector<int> &sequence, double p)
         theoreticalCdfVector.emplace_back(x, F_eta);
     }
 
-    // Построение ступенчатой эмпирической CDF
+    // Построение  эмпирической
     for (size_t i = 0; i < empiricalCdfVector.size(); ++i)
     {
         int x = empiricalCdfVector[i].first;
@@ -253,7 +253,6 @@ double StatisticsAndPlot::computeMaxDeviation()
     size_t empSize = empiricalCDF.size();
     size_t theoSize = theoreticalCDF.size();
 
-    // Предполагается, что empSize и theoSize совпадают
     size_t size = std::min(empSize, theoSize);
     for (size_t i = 0; i < size; ++i)
     {
